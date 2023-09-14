@@ -122,9 +122,8 @@ function iniciarApp() {
     }
 
     function mostrarRecetaModal(receta) {
-        console.log(receta);
 
-        const { idMeal, strInstructions, strMeal, strMealThumb, strIngredient } = receta;
+        const { idMeal, strInstructions, strMeal, strMealThumb } = receta;
 
         //añadir contenido al modal
         const modalTiltle = document.querySelector('.modal .modal-title');
@@ -136,17 +135,17 @@ function iniciarApp() {
         <h3 class="my-3">Instrucciones</h3>  
         <p>${strInstructions}</p>
         <h3 class="my-3">Ingredientes y Cantidades</h3>  
-        
-
         `;
-      
+
+
+
 
         const listGroup = document.createElement('UL');
         listGroup.classList.add('list-group');
         //iterar Ingredientes
         for (let i = 1; i <= 20; i++) {
-            
-            if(receta[`strIngredient${i}`]){
+
+            if (receta[`strIngredient${i}`]) {
                 const ingredientes = receta[`strIngredient${i}`];
                 const cantidad = receta[`strIngredient${i}`];
 
@@ -164,17 +163,38 @@ function iniciarApp() {
         const modalFooter = document.querySelector('.modal-footer');
         limpiarCodigoHtml(modalFooter);
 
+
+
+
+
         //Botones de cerrar y favorito
-        const btnFavorito  = document.createElement('BUTTON');
+        const btnFavorito = document.createElement('BUTTON');
         btnFavorito.classList.add('btn', 'btn-danger', 'col');
         btnFavorito.textContent = 'Guardar Favorito';
 
-        const btnCerrarModal  = document.createElement('BUTTON');
+
+        btnFavorito.onclick = function () {
+
+            if(existeEnLocalStorage(idMeal)){
+                return
+            }
+            
+            agregarComidaFavorita({
+                id: idMeal,
+                titulo: strMeal,
+                img: strMealThumb
+            });
+        }
+
+
+
+
+        const btnCerrarModal = document.createElement('BUTTON');
         btnCerrarModal.classList.add('btn', 'btn-secondary', 'col');
         btnCerrarModal.textContent = 'Cerrar';
 
         //function cerrar
-        btnCerrarModal.onclick = function (){
+        btnCerrarModal.onclick = function () {
             modal.hide();
         }
 
@@ -188,8 +208,23 @@ function iniciarApp() {
 
         //mostrar el modal
         modal.show();
-
     }
+
+
+
+    //function agregar Favorito
+    function agregarComidaFavorita(objecReceta){
+       const favoritos =  JSON.parse(localStorage.getItem('favoritos')) ?? [];
+       localStorage.setItem('favoritos', JSON.stringify([...favoritos, objecReceta]));
+    }
+
+    //registro duplicados
+    function existeEnLocalStorage(id){
+        const favoritos =  JSON.parse(localStorage.getItem('favoritos')) ?? [];
+        return favoritos.some(favorito => favorito.id === id);
+    }
+
+
 
 
     //limpiar los resultado de la consulta
